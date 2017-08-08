@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 import { ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
-import { createContainer } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { Bert } from 'meteor/themeteorchef:bert';
-import Documents from '../../../api/Documents/Documents';
 import NotFound from '../NotFound/NotFound';
 import Loading from '../../components/Loading/Loading';
 
@@ -38,23 +38,31 @@ const renderDocument = (doc, match, history) => (doc ? (
   </div>
 ) : <NotFound />);
 
-const ViewDocument = ({ loading, doc, match, history }) => (
-  !loading ? renderDocument(doc, match, history) : <Loading />
+const ViewDocument = ({ data: { loading, document }, match, history }) => (
+  !loading ? renderDocument(document, match, history) : <Loading />
 );
 
 ViewDocument.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  doc: PropTypes.object,
+  data: PropTypes.object,
   match: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
 };
 
-export default createContainer(({ match }) => {
-  const documentId = match.params._id;
-  const subscription = Meteor.subscribe('documents.view', documentId);
-
-  return {
-    loading: !subscription.ready(),
-    doc: Documents.findOne(documentId),
-  };
-}, ViewDocument);
+export default graphql(gql`
+  query($_id: String!) {
+    document(_id: $_id) {
+      _id,
+      title,
+      body,
+      createdAt,
+      updatedAt,
+    },
+  },
+`, {
+  options: ({ match: { params: { _id } } }) => ({
+    pollInterval: 10000,
+    variables: {
+      _id,
+    },
+  }),
+})(ViewDocument);

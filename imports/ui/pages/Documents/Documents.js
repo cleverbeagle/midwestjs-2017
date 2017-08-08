@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 import { Link } from 'react-router-dom';
 import { Table, Alert, Button } from 'react-bootstrap';
 import { timeago, monthDayYearAtTime } from '@cleverbeagle/dates';
 import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
 import { Bert } from 'meteor/themeteorchef:bert';
-import DocumentsCollection from '../../../api/Documents/Documents';
 import Loading from '../../components/Loading/Loading';
 
 import './Documents.scss';
@@ -23,13 +23,13 @@ const handleRemove = (documentId) => {
   }
 };
 
-const Documents = ({ loading, documents, match, history }) => (!loading ? (
+const Documents = ({ data: { loading, documents }, match, history }) => (!loading ? (
   <div className="Documents">
     <div className="page-header clearfix">
       <h4 className="pull-left">Documents</h4>
       <Link className="btn btn-success pull-right" to={`${match.url}/new`}>Add Document</Link>
     </div>
-    {documents.length ? <Table responsive>
+    {!loading && documents.length ? <Table responsive>
       <thead>
         <tr>
           <th>Title</th>
@@ -67,16 +67,25 @@ const Documents = ({ loading, documents, match, history }) => (!loading ? (
 ) : <Loading />);
 
 Documents.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  documents: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
 };
 
-export default createContainer(() => {
-  const subscription = Meteor.subscribe('documents');
-  return {
-    loading: !subscription.ready(),
-    documents: DocumentsCollection.find().fetch(),
-  };
-}, Documents);
+export default graphql(gql`
+  query($owner: String!) {
+    documents(owner: $owner) {
+      _id,
+      title,
+      createdAt,
+      updatedAt,
+    },
+  },
+`, {
+  options: ({ userId }) => ({
+    pollInterval: 10000,
+    variables: {
+      owner: userId,
+    },
+  }),
+})(Documents);
