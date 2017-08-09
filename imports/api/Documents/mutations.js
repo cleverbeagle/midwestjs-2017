@@ -1,11 +1,13 @@
 import { GraphQLNonNull, GraphQLString } from 'graphql';
-
 import Document from './types';
 import Documents from './Documents';
 
 export const insertDocument = {
   type: Document,
   args: {
+    owner: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -15,7 +17,8 @@ export const insertDocument = {
   },
   resolve(parent, args) {
     const timestamp = (new Date()).toISOString();
-    return Documents.insert({ ...args, createdAt: timestamp, updatedAt: timestamp });
+    const _id = Documents.insert({ ...args, createdAt: timestamp, updatedAt: timestamp });
+    return { _id };
   },
 };
 
@@ -34,7 +37,8 @@ export const updateDocument = {
   },
   resolve(parent, { _id, title, body }) {
     const timestamp = (new Date()).toISOString();
-    return Documents.update(_id, { $set: { title, body, updatedAt: timestamp } });
+    Documents.update(_id, { $set: { title, body, updatedAt: timestamp } });
+    return { _id };
   },
 };
 

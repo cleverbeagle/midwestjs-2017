@@ -1,29 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import { Link } from 'react-router-dom';
 import { Table, Alert, Button } from 'react-bootstrap';
 import { timeago, monthDayYearAtTime } from '@cleverbeagle/dates';
-import { Meteor } from 'meteor/meteor';
 import { Bert } from 'meteor/themeteorchef:bert';
 import Loading from '../../components/Loading/Loading';
 
 import './Documents.scss';
 
-const handleRemove = (documentId) => {
+const handleRemove = (_id, mutate, refetch) => {
   if (confirm('Are you sure? This is permanent!')) {
-    Meteor.call('documents.remove', documentId, (error) => {
-      if (error) {
-        Bert.alert(error.reason, 'danger');
-      } else {
-        Bert.alert('Document deleted!', 'success');
-      }
+    mutate({
+      variables: {
+        _id,
+      },
+    })
+    .then(() => {
+      Bert.alert('Document deleted!', 'success');
+      refetch();
+    })
+    .catch((error) => {
+      Bert.alert(error.message, 'danger');
     });
   }
 };
 
-const Documents = ({ data: { loading, documents }, match, history }) => (!loading ? (
+const Documents = ({ data: { loading, documents, refetch }, match, history, mutate }) => (!loading ? (
   <div className="Documents">
     <div className="page-header clearfix">
       <h4 className="pull-left">Documents</h4>
@@ -55,7 +59,7 @@ const Documents = ({ data: { loading, documents }, match, history }) => (!loadin
             <td>
               <Button
                 bsStyle="danger"
-                onClick={() => handleRemove(_id)}
+                onClick={() => handleRemove(_id, mutate, refetch)}
                 block
               >Delete</Button>
             </td>
@@ -70,22 +74,32 @@ Documents.propTypes = {
   data: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  mutate: PropTypes.func.isRequired,
 };
 
-export default graphql(gql`
-  query($owner: String!) {
-    documents(owner: $owner) {
-      _id,
-      title,
-      createdAt,
-      updatedAt,
+export default compose(
+  graphql(gql`
+    query($owner: String!) {
+      documents(owner: $owner) {
+        _id,
+        title,
+        createdAt,
+        updatedAt,
+      },
     },
-  },
-`, {
-  options: ({ userId }) => ({
-    pollInterval: 10000,
-    variables: {
-      owner: userId,
-    },
+  `, {
+    options: ({ userId }) => ({
+      pollInterval: 10000,
+      variables: {
+        owner: userId,
+      },
+    }),
   }),
-})(Documents);
+  graphql(gql`
+    mutation remomveDocument($_id: String!) {
+      removeDocument(_id: $_id) {
+        _id
+      }
+    }
+  `),
+)(Documents);

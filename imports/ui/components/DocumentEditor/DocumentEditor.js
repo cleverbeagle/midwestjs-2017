@@ -32,25 +32,30 @@ class DocumentEditor extends React.Component {
   }
 
   handleSubmit() {
-    const { history } = this.props;
+    const { graphql, history } = this.props;
     const existingDocument = this.props.doc && this.props.doc._id;
-    const methodToCall = existingDocument ? 'documents.update' : 'documents.insert';
     const doc = {
       title: this.title.value.trim(),
       body: this.body.value.trim(),
     };
 
+    if (!existingDocument) doc.owner = Meteor.userId(); // This is technically naughty. Ask why.
     if (existingDocument) doc._id = existingDocument;
 
-    Meteor.call(methodToCall, doc, (error, documentId) => {
-      if (error) {
-        Bert.alert(error.reason, 'danger');
-      } else {
-        const confirmation = existingDocument ? 'Document updated!' : 'Document added!';
-        this.form.reset();
-        Bert.alert(confirmation, 'success');
-        history.push(`/documents/${documentId}`);
-      }
+    graphql.mutate({
+      variables: doc,
+    })
+    .then(({ data }) => {
+      const _id = data.insertDocument ? data.insertDocument._id : data.updateDocument._id;
+      const confirmation = existingDocument ? 'Document updated!' : 'Document added!';
+      this.form.reset();
+      Bert.alert(confirmation, 'success');
+      history.push(`/documents/${_id}`);
+      if (graphql.refetch) graphql.refetch();
+    })
+    .catch((error) => {
+      console.log(error);
+      Bert.alert(error, 'danger');
     });
   }
 
@@ -87,11 +92,13 @@ class DocumentEditor extends React.Component {
 
 DocumentEditor.defaultProps = {
   doc: { title: '', body: '' },
+  graphql: {},
 };
 
 DocumentEditor.propTypes = {
   doc: PropTypes.object,
   history: PropTypes.object.isRequired,
+  graphql: PropTypes.object,
 };
 
 export default DocumentEditor;

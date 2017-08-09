@@ -1,33 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createContainer } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
-import Documents from '../../../api/Documents/Documents';
+import gql from 'graphql-tag';
+import { graphql, compose } from 'react-apollo';
 import DocumentEditor from '../../components/DocumentEditor/DocumentEditor';
 import NotFound from '../NotFound/NotFound';
 
-const EditDocument = ({ doc, history }) => (doc ? (
+const EditDocument = ({ data: { document, refetch }, history, mutate }) => (document ? (
   <div className="EditDocument">
-    <h4 className="page-header">{`Editing "${doc.title}"`}</h4>
-    <DocumentEditor doc={doc} history={history} />
+    <h4 className="page-header">{`Editing "${document.title}"`}</h4>
+    <DocumentEditor doc={document} history={history} graphql={{ mutate, refetch }} />
   </div>
 ) : <NotFound />);
 
-EditDocument.defaultProps = {
-  doc: null,
-};
-
 EditDocument.propTypes = {
-  doc: PropTypes.object,
+  data: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  mutate: PropTypes.func.isRequired,
 };
 
-export default createContainer(({ match }) => {
-  const documentId = match.params._id;
-  const subscription = Meteor.subscribe('documents.view', documentId);
-
-  return {
-    loading: !subscription.ready(),
-    doc: Documents.findOne(documentId),
-  };
-}, EditDocument);
+export default compose(
+  graphql(gql`
+    query($_id: String!) {
+      document(_id: $_id) {
+        _id,
+        title,
+        body,
+        createdAt,
+        updatedAt,
+      },
+    },
+  `, {
+    options: ({ match: { params: { _id } } }) => ({
+      pollInterval: 10000,
+      variables: {
+        _id,
+      },
+    }),
+  }),
+  graphql(gql`
+    mutation updateDocument($_id: String!, $title: String!, $body: String!) {
+      updateDocument(_id: $_id, title: $title, body: $body) {
+        _id,
+      }
+    }
+  `),
+)(EditDocument);
