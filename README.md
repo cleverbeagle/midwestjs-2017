@@ -19,4 +19,4 @@ In this talk, we'll take a hands-on look at using React and GraphQL together, ut
 
 ---
 
-Building a product and want to use GraphQL with Apollo and React? [Check out mentorship with Clever Beagle](http://cleverbeagle.com).
+Building a product and want to use GraphQL with Apollo and React? [Check out mentorship with Clever Beagle](http://cleverbeagle.com?talk=midwestjs2017).
