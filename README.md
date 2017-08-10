@@ -9,13 +9,17 @@ In this talk, we'll take a hands-on look at using React and GraphQL together, ut
 
 #### GraphQL Resources
 
-- Hosted GraphQL Server/Schema: [graph.cool](https://www.graph.cool/)
+##### Hosted GraphQL Services
+
+- [Scaphold](https://scaphold.io)
+- [graph.cool](https://www.graph.cool/)
 
 #### Apollo Resources
 
-- Blog Post: [An Introduction to the Apollo Stack for the Uninitiated](https://themeteorchef.com/tutorials/an-introduction-to-the-apollo-stack-for-the-uninitiated)
-- Tutorial: [Getting Started with Apollo](https://themeteorchef.com/tutorials/getting-started-with-apollo)
-- Example/Docs: [Server Side Rendering with Apollo](http://dev.apollodata.com/react/server-side-rendering.html)
+- [An Introduction to the Apollo Stack for the Uninitiated](https://themeteorchef.com/tutorials/an-introduction-to-the-apollo-stack-for-the-uninitiated)
+- [Getting Started with Apollo](https://themeteorchef.com/tutorials/getting-started-with-apollo)
+- [Subscriptions with Apollo]()
+- [Server Side Rendering with Apollo](http://dev.apollodata.com/react/server-side-rendering.html)
 
 ---
 

@@ -8,7 +8,7 @@ import App from '../../ui/layouts/App/App';
 import '../../ui/stylesheets/app.scss';
 
 const client = new ApolloClient({
-  networkInterface: createNetworkInterface({ uri: Meteor.settings.public.graphql.uri }),
+  networkInterface: createNetworkInterface({ uri: 'http://localhost:4000/graphql' }),
 });
 
 Meteor.startup(() => render(

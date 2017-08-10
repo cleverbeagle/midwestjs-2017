@@ -3,6 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormGroup, ControlLabel, Button } from 'react-bootstrap';
+import gql from 'graphql-tag';
 import { Meteor } from 'meteor/meteor';
 import { Bert } from 'meteor/themeteorchef:bert';
 import validate from '../../../modules/validate';
@@ -44,6 +45,19 @@ class DocumentEditor extends React.Component {
 
     graphql.mutate({
       variables: doc,
+      refetchQueries: [{
+        query: gql`
+          query($owner: String!) {
+            documents(owner: $owner) {
+              _id,
+              title,
+              createdAt,
+              updatedAt,
+            },
+          },
+        `,
+        variables: { owner: existingDocument ? existingDocument.owner : doc.owner },
+      }],
     })
     .then(({ data }) => {
       const _id = data.insertDocument ? data.insertDocument._id : data.updateDocument._id;

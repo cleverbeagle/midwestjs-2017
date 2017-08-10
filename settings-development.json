@@ -1,9 +1,5 @@
 {
-  "public": {
-    "graphql": {
-      "uri": "http://localhost:4000/graphql"
-    }
-  },
+  "public": {},
   "private": {
     "MAIL_URL": "",
     "OAuth": {
