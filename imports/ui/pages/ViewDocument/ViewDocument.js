@@ -8,7 +8,7 @@ import NotFound from '../NotFound/NotFound';
 import Loading from '../../components/Loading/Loading';
 
 const handleRemove = ({ _id, owner }, history, mutate) => {
-  if (confirm('Are you sure? This is permanent!')) {
+  if (confirm('Are you sure? This is permanent!')) { // eslint-disable-line
     mutate({
       variables: {
         _id,

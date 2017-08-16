@@ -23,14 +23,7 @@ const mutation = new GraphQLObjectType({
   },
 });
 
-//
-// const subscription = new GraphQLObjectType({
-//   name: 'Subscription',
-//   description: 'Subscriptions for the application.',
-// });
-
 export default new GraphQLSchema({
   query,
   mutation,
-  // subscription,
 });
