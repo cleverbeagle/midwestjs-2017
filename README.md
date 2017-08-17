@@ -3,6 +3,8 @@
 August 17th, 2017 @ [Midwest JS](http://midwestjs.com) <br />
 with Ryan Glover (CEO, [Clever Beagle](http://cleverbeagle.com))
 
+[View the deck for this talk](http://slides.com/cleverbeagle/getting-started-with-graphql-apollo-and-react#/)
+
 In this talk, we'll take a hands-on look at using React and GraphQL together, utilizing Apollo as the glue between the client and our data source (MongoDB). We'll learn how to wire up a simple GraphQL server and schema, piping data from the server to the client using Apollo's `apollo-client` NPM package. We'll also discuss some high-level theory on why we'd want to use GraphQL in our apps and how it can help us to better manage data in our user interfaces.
 
 ---
