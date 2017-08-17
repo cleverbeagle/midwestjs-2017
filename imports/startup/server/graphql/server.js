@@ -13,4 +13,6 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
-app.listen(4000);
+app.listen(4000, () => {
+  console.log('GraphQL Server listening on port 4000. Mark Zuckerberg is listening on all ports.');
+});

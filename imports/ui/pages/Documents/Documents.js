@@ -90,7 +90,7 @@ export default compose(
       },
     },
   `, {
-    options: ({ userId }) => ({
+    options: ({ userId }) => ({ // Argument being destructured is props passed to component.
       pollInterval: 10000,
       variables: {
         owner: userId,
@@ -98,7 +98,7 @@ export default compose(
     }),
   }),
   graphql(gql`
-    mutation remomveDocument($_id: String!) {
+    mutation removeDocument($_id: String!) {
       removeDocument(_id: $_id) {
         _id
       }

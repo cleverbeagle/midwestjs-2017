@@ -12,6 +12,8 @@ const documentsSeed = userId => ({
       owner: userId,
       title: `Document #${dataIndex + 1}`,
       body: `This is the body of document #${dataIndex + 1}`,
+      createdAt: (new Date()).toISOString(),
+      updatedAt: (new Date()).toISOString(),
     };
   },
 });
